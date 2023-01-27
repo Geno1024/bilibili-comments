@@ -21,7 +21,8 @@ def get_comments(aid: int) -> List[ReplyObject.Data.Reply]:
         page += 1
         reply_object = get_comment(aid, page)
         replies += reply_object.data.replies
-    return replies
+    typecast = [ReplyObject.Data.Reply(*r) for r in replies]
+    return typecast
 
 
 if __name__ == '__main__':

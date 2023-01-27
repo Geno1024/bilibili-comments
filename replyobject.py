@@ -1,3 +1,5 @@
+import json
+
 from typing import List
 
 
@@ -53,7 +55,7 @@ class ReplyObject:
                             rank: str,
                             face_nft_new: int,
                             is_senior_member: int,
-                            level_info: object,
+                            level_info: LevelInfo,
                             pendant: object,
                             nameplate: object,
                             official_verify: object,
@@ -85,6 +87,25 @@ class ReplyObject:
                         self.nft_interaction = nft_interaction
                         self.avatar_item = avatar_item
 
+                class Content:
+                    def __init__(
+                            self,
+                            message: str,
+                            members: List[object],
+                            emote: object,
+                            jump_url: object,
+                            max_line: int,
+                            at_name_to_mid: object,
+                            rich_text: object,
+                    ):
+                        self.message = message
+                        self.members = members
+                        self.emote = emote
+                        self.jump_url = jump_url
+                        self.max_line = max_line
+                        self.at_name_to_mid = at_name_to_mid
+                        self.rich_text = rich_text
+
                 def __init__(
                         self,
                         rpid: int,
@@ -106,7 +127,7 @@ class ReplyObject:
                         like: int,
                         action: int,
                         member: Member,
-                        content: object,
+                        content: Content,
                         replies: object,
                         assist: int,
                         up_action: object,
@@ -114,7 +135,7 @@ class ReplyObject:
                         card_label: List[object],
                         reply_control: object,
                         folder: object,
-                        dynamic_id_str: str
+                        dynamic_id_str: str = None
                 ):
                     self.rpid = rpid
                     self.oid = oid
@@ -145,6 +166,16 @@ class ReplyObject:
                     self.folder = folder
                     self.dynamic_id_str = dynamic_id_str
 
+                def __str__(self):
+                    return json.dumps({
+                        "member": {
+                            "id": self.member.mid,
+                            "name": self.member.uname,
+                            "level": self.member.level_info.current_level
+                        },
+                        "message": self.content.message
+                    }, ensure_ascii=False)
+
             def __init__(
                     self,
                     rpid: int,
@@ -166,7 +197,7 @@ class ReplyObject:
                     like: int,
                     action: int,
                     member: SReply.Member,
-                    content: object,
+                    content: SReply.Content,
                     replies: List[SReply],
                     assist: int,
                     up_action: object,
@@ -174,7 +205,7 @@ class ReplyObject:
                     card_label: List[object],
                     reply_control: object,
                     folder: object,
-                    dynamic_id_str: str
+                    dynamic_id_str: str = None
             ):
                 self.rpid = rpid
                 self.oid = oid
@@ -204,6 +235,17 @@ class ReplyObject:
                 self.reply_control = reply_control
                 self.folder = folder
                 self.dynamic_id_str = dynamic_id_str
+
+            def __str__(self):
+                return json.dumps({
+                    "member": {
+                        "id": self.member.mid,
+                        "name": self.member.uname,
+                        "level": self.member.level_info.current_level
+                    },
+                    "message": self.content.message,
+                    "sub_reply": [json.loads(ReplyObject.Data.Reply.SReply(*s).__str__()) for s in self.replies] if self.replies is not None else []
+                }, ensure_ascii=False)
 
         def __init__(
                 self,
