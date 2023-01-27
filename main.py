@@ -5,7 +5,7 @@ from typing import List
 
 import requests
 
-from ds.replyobject import ReplyObject
+from replyobject import ReplyObject
 
 
 def get_comment(aid: int, page: int) -> ReplyObject:
